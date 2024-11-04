@@ -1,0 +1,6 @@
+clang++
+%h -x
+%h c++-header
+-I/home/u/project/build/vcpkg_installed/x64-linux/include
+-I/home/u/project/include
+-I/home/u/project/telebot/include

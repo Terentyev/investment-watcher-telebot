@@ -1,0 +1,33 @@
+@startuml
+
+actor "User" as user
+
+box "Back" #LightBlue
+  participant "Base (IApplication)" as app
+  participant "ITelegramBot" as telegrambot
+  box "Storage" #LightGreen
+    participant "IStorage" as storage
+    database "DataBase" as db
+  end box
+end box
+
+autonumber
+group Any message
+  user -> telegrambot++: ReactOnAnyMessage
+  alt if message == "/start"
+    telegrambot -> user: sendMessage "Hi!"
+  else
+    telegrambot -> app++: call onAnyMessage-listeners
+    app -> storage++: ensure_user_exists
+    storage -> db++: does user info exist?
+    opt user info not exists
+      storage -> db: create user info unless exists
+    end
+    db -> storage--: return user info
+    storage -> app--: return user info
+    app -> telegrambot--: sendMessage echo-message
+    telegrambot -> user--: sendMessage message
+  end alt
+end group
+
+@enduml

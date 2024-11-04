@@ -1,0 +1,142 @@
+@startuml
+
+title "Диаграмма класса проекта InvestmentWatcher"
+
+set separator ::
+
+abstract class Application::IApplication {
+  {method} {abstract} +int initialize()
+  {method} {abstract} +int start()
+  {method} +void usage()
+}
+abstract class TelegramBot::ITelegramBot {
+  {method} {abstract} +void initialize( const std::string &token)
+  {method} {abstract} +void sendMessage( const TelegramBot::IChat::CPtr& chat, const std::string& message )
+  {method} +void onAnyMessage( const MessageListener &listener )
+}
+interface TelegramBot::IChat {
+  {method} {abstract} +const std::int64_t getId()
+  {method} {abstract} +const std::string& getTitle()
+  {method} {abstract} +const std::string& getUsername()
+  {method} {abstract} +const std::string& getFirstName()
+  {method} {abstract} +const std::string& getLastName()
+  {method} {abstract} +const bool getIsForum()
+  {method} {abstract} +const std::vector<std::string>& getActiveUsernames()
+  {method} {abstract} +const std::string& getEmojiStatusCustomEmojiId()
+  {method} {abstract} +const std::string& getBio()
+  {method} {abstract} +const std::string& getDescription()
+  {method} {abstract} +const std::string& getInviteLink()
+}
+interface TelegramBot::IUser {
+  {method} {abstract} +const std::int64_t getId()
+  {method} {abstract} +const bool getIsBot()
+  {method} {abstract} +const std::string& getFirstName()
+  {method} {abstract} +const std::string& getLastName()
+  {method} {abstract} +const std::string& getUsername()
+  {method} {abstract} +const std::string& getLanguageCode()
+}
+interface TelegramBot::IMessage {
+  {method} {abstract} +const std::int32_t getMessageId()
+  {method} {abstract} +const std::int32_t getMessageThreadId()
+  {method} {abstract} +const TelegramBot::IUser::CPtr& getFrom()
+  {method} {abstract} +const TelegramBot::IChat::CPtr& getSenderChat()
+  {method} {abstract} +const std::int32_t getDate()
+  {method} {abstract} +const TelegramBot::IChat::CPtr& getChat()
+  {method} {abstract} +const std::string& getText()
+}
+interface Storage::IStorage {
+  {method} {abstract} +void initialize( const std::string& dbci )
+  {method} {abstract} +void make_schema()
+  {method} {abstract} +void ensure_user_exists( const TelegramBot::TelegramBot::IUser::CPtr& from )
+}
+abstract class Logger::ILogger {
+  {method} {abstract} +void error( const std::string& message )
+  {method} {abstract} +void debug( const std::string& message )
+  {method} {abstract} +void info( const std::string& message )
+  {method} +void error( const boost::format &frmt )
+  {method} +void debug( const boost::format &frmt )
+  {method} +void info( const boost::format &frmt )
+}
+interface Config::IConfig {
+  {method} {abstract} +const std::string getValue( const std::string &name )
+}
+
+class Application::Base implements Application::IApplication {
+  {method} +Base( ... )
+  {method} +int initialize()
+  {method} +int start()
+  {method} +void usage ( std::ostream &out_stream )
+
+  {field} -const std::string _application_filename
+  {field} -const std::unique_ptr<Telebot::TelegramBot::TelegramBot::ITelegramBot> _bot
+  {field} -const std::unique_ptr<Telebot::Config::Config::IConfig> _config
+  {field} -const std::unique_ptr<Telebot::Logger::Logger::ILogger> _log
+  {field} -const std::unique_ptr<Telebot::Storage::Storage::IStorage> _storage
+}
+class Config::Environment implements Config::IConfig {
+  {method} +const std::string getValue( const std::string &name )
+}
+class Logger::IOStream implements Logger::ILogger {
+  {method} +void error( const std::string& message )
+  {method} +void debug( const std::string& message )
+  {method} +void info( const std::string& message )
+}
+class Storage::ODB implements Storage::IStorage {
+  {field} -std::unique_ptr<odb::core::database> _db
+  {method} +void initialize( const std::string& dbci )
+  {method} +void make_schema()
+  {method} +void ensure_user_exists( const TelegramBot::TelegramBot::IUser::CPtr& from )
+}
+class TelegramBot::UserTgBot implements TelegramBot::IUser {
+  {field} -const TgBot::User::Ptr _user_ptr
+  {method} +const std::int64_t getId()
+  {method} +const bool getIsBot()
+  {method} +const std::string& getFirstName()
+  {method} +const std::string& getLastName()
+  {method} +const std::string& getUsername()
+  {method} +const std::string& getLanguageCode()
+}
+class TelegramBot::ChatTgBot implements TelegramBot::IChat {
+  {field} -const TgBot::Chat::Ptr _chat_ptr
+  {method} +const std::int64_t getId()
+  {method} +const std::string& getTitle()
+  {method} +const std::string& getUsername()
+  {method} +const std::string& getFirstName()
+  {method} +const std::string& getLastName()
+  {method} +const bool getIsForum()
+  {method} +const std::vector<std::string>& getActiveUsernames()
+  {method} +const std::string& getEmojiStatusCustomEmojiId()
+  {method} +const std::string& getBio()
+  {method} +const std::string& getDescription()
+  {method} +const std::string& getInviteLink()
+}
+class TelegramBot::MessageTgBot implements TelegramBot::IMessage {
+  {field} -const TgBot::Message::Ptr _message_ptr
+  {field} -const IUser::CPtr _from
+  {field} -const IChat::CPtr _senderChat
+  {field} -const IChat::CPtr _chat
+  {method} +const std::int32_t getMessageId()
+  {method} +const std::int32_t getMessageThreadId()
+  {method} +const TelegramBot::IUser::CPtr& getFrom()
+  {method} +const TelegramBot::IChat::CPtr& getSenderChat()
+  {method} +const std::int32_t getDate()
+  {method} +const TelegramBot::IChat::CPtr& getChat()
+  {method} +const std::string& getText()
+}
+class TelegramBot::TelegramBotTgBot implements TelegramBot::ITelegramBot {
+  {field} -std::unique_ptr<TgBot::Bot> _bot
+  {method} +void initialize( const std::string &token)
+  {method} +void sendMessage( const TelegramBot::IChat::CPtr& chat, const std::string& message )
+}
+
+
+
+TelegramBot::ITelegramBot o-- Application::Base
+Config::IConfig o-- Application::Base
+Logger::ILogger o-- Application::Base
+Storage::IStorage o-- Application::Base
+
+TelegramBot::IChat o-- TelegramBot::IMessage
+TelegramBot::IUser o-- TelegramBot::IMessage
+
+@enduml
