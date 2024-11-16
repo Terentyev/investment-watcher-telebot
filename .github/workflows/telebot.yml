@@ -16,10 +16,7 @@ jobs:
     - name: run-vcpkg
       uses: lukka/run-vcpkg@v7.6
       with:
-        setupOnly: 1
-    - name: install dependencies
-      working-directory: ./telebot
-      run: ../vcpkg/vcpkg install
+        vcpkgJsonGlob: ./telebot/vcpkg.json
     - name: cmake configure
       working-directory: ./telebot
       run: CXXFLAGS=--std=c++14 cmake -B "../build" -S "./" -DCMAKE_TOOLCHAIN_FILE="../vcpkg/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=YE
