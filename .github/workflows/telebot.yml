@@ -1,0 +1,32 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: run-vcpkg
+      uses: lukka/run-vcpkg@v7.6
+    - name: install dependencies
+      working-directory: ./telebot
+      run: ../vcpkg/vcpkg install
+    - name: cmake configure
+      working-directory: ./telebot
+      run: CXXFLAGS=--std=c++14 cmake -B "../build" -S "./" -DCMAKE_TOOLCHAIN_FILE="../vcpkg/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=YE
+    - name: make
+      working-directory: ./build
+      run: make
+    - name: make check
+      working-directory: ./build
+      run: make check
+    - name: make distcheck
+      working-directory: ./build
+      run: make distcheck
