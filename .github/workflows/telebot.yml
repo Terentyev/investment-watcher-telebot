@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: run-vcpkg
-      uses: lukka/run-vcpkg@v7.6
+      uses: lukka/run-vcpkg@v11
       with:
         vcpkgJsonGlob: ./telebot/vcpkg.json
     - name: cmake configure
