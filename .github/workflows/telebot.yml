@@ -16,8 +16,7 @@ jobs:
     - name: run-vcpkg
       uses: lukka/run-vcpkg@v11
       with:
-        vcpkgJsonGlob: '${{ github.workspace }}/telebot/vcpkg.json'
-        vcpkgDirectory: '${{ github.workspace }}/../vcpkg'
+        vcpkgGitCommitId: '${{ matrix.vcpkgCommitId }}'
     - name: cmake configure
       working-directory: ./telebot
       run: CXXFLAGS=--std=c++14 cmake -B '${{ github.workspace }}/build' -S '${{ github.workspace }}/telebot/' -DCMAKE_TOOLCHAIN_FILE='${{ github.workspace }}/../vcpkg/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=YE
