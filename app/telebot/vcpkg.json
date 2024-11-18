@@ -8,6 +8,7 @@
     "sqlite3",
     "tgbot-cpp",
     "libodb",
-    "libodb-sqlite"
+    "libodb-sqlite",
+    "gtest"
   ]
 }
